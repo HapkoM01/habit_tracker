@@ -60,3 +60,7 @@ python manage.py test
 coverage run --source='habits,users' manage.py test
 coverage report -m
 ```
+
+## 👨‍💻 Код написал:
+
+### 𝑯𝒂𝒑𝒌𝒐𝑴 - 𝑩𝒆𝒈𝒊𝒏𝒏𝒆𝒓 𝑷𝒚𝒕𝒉𝒐𝒏-𝒅𝒆𝒗𝒆𝒍𝒐𝒑𝒆𝒓!
