@@ -61,7 +61,9 @@ class Habit(models.Model):
         errors = {}
 
         if self.time_to_complete and self.time_to_complete > 120:
-            errors['time_to_complete'] = 'Время выполнения не должно превышать 120 секунд.'
+            errors['time_to_complete'] = (
+                'Время выполнения не должно превышать 120 секунд.'
+            )
 
         if self.periodicity is not None and self.periodicity > 7:
             errors['periodicity'] = (
@@ -69,20 +71,41 @@ class Habit(models.Model):
                 '(periodicity ≤ 7).'
             )
         if self.periodicity is not None and self.periodicity < 1:
-            errors['periodicity'] = 'Периодичность должна быть не менее 1 дня.'
+            errors['periodicity'] = (
+                'Периодичность должна быть не менее 1 дня.'
+            )
 
-        if self.related_habit and self.reward:
-            errors['reward'] = 'Нельзя одновременно указать связанную привычку и вознаграждение.'
-            errors['related_habit'] = 'Нельзя одновременно указать связанную привычку и вознаграждение.'
+        has_related = self.related_habit is not None
+        has_reward = bool(self.reward and str(self.reward).strip())
+
+        if has_related and has_reward:
+            msg = (
+                'Нельзя одновременно указать связанную привычку '
+                'и вознаграждение.'
+            )
+            errors['reward'] = msg
+            errors['related_habit'] = msg
 
         if self.is_pleasant:
-            if self.reward:
-                errors['reward'] = 'У приятной привычки не может быть вознаграждения.'
-            if self.related_habit:
-                errors['related_habit'] = 'У приятной привычки не может быть связанной привычки.'
+            if has_reward:
+                errors['reward'] = (
+                    'У приятной привычки не может быть вознаграждения.'
+                )
+            if has_related:
+                errors['related_habit'] = (
+                    'У приятной привычки не может быть связанной привычки.'
+                )
+        else:
+            if not has_related and not has_reward:
+                errors['reward'] = (
+                    'У полезной привычки должно быть заполнено '
+                    'вознаграждение или связанная привычка.'
+                )
 
-        if self.related_habit and not self.related_habit.is_pleasant:
-            errors['related_habit'] = 'Связанной может быть только приятная привычка.'
+        if has_related and not self.related_habit.is_pleasant:
+            errors['related_habit'] = (
+                'Связанной может быть только приятная привычка.'
+            )
 
         if errors:
             raise ValidationError(errors)
@@ -90,7 +113,6 @@ class Habit(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
-
 
 
 class HabitLog(models.Model):

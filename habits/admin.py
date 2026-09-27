@@ -12,7 +12,6 @@ class HabitAdmin(admin.ModelAdmin):
     search_fields = ('action', 'place', 'user__email')
 
 
-
 @admin.register(HabitLog)
 class HabitLogAdmin(admin.ModelAdmin):
     list_display = ('id', 'habit', 'date', 'completed', 'created_at')

@@ -170,3 +170,17 @@ class HabitAPITests(APITestCase):
     def test_unauthenticated_list_denied(self):
         response = self.client.get(reverse('habit-list'))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_useful_habit_requires_reward_or_related(self):
+        """Полезная привычка без reward и related_habit — ошибка."""
+        self.client.force_authenticate(user=self.user)
+        data = {
+            'place': 'дом',
+            'time': '09:00:00',
+            'action': 'без награды',
+            'is_pleasant': False,
+            'time_to_complete': 60,
+            'periodicity': 1,
+        }
+        response = self.client.post(reverse('habit-list'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

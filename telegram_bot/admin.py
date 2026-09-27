@@ -1,3 +1,1 @@
-from django.contrib import admin
-
-# Register your models here.
+# Admin for telegram_bot app (no models registered yet).

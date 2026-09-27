@@ -11,8 +11,6 @@ Telegram-бот для Habit Tracker (long polling).
 """
 import logging
 import time
-from datetime import date
-
 import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model

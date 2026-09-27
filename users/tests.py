@@ -1,3 +1,1 @@
-from django.test import TestCase
-
-# Create your tests here.
+# User-related tests live in habits.tests (auth endpoints).

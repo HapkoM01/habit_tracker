@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
 
 User = get_user_model()
 
@@ -10,13 +10,24 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'password', 'password_confirm', 'telegram_id', 'telegram_username')
+        fields = (
+            'id',
+            'email',
+            'password',
+            'password_confirm',
+            'telegram_id',
+            'telegram_username',
+        )
 
     def validate(self, attrs):
         if attrs['password'] != attrs['password_confirm']:
-            raise serializers.ValidationError({'password_confirm': 'Пароли не совпадают'})
+            raise serializers.ValidationError({
+                'password_confirm': 'Пароли не совпадают',
+            })
         if User.objects.filter(email=attrs['email']).exists():
-            raise serializers.ValidationError({'email': 'Пользователь с таким email уже существует'})
+            raise serializers.ValidationError({
+                'email': 'Пользователь с таким email уже существует',
+            })
         return attrs
 
     def create(self, validated_data):
@@ -31,5 +42,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'email', 'telegram_id', 'telegram_username', 'date_joined')
+        fields = (
+            'id',
+            'email',
+            'telegram_id',
+            'telegram_username',
+            'date_joined',
+        )
         read_only_fields = ('id', 'email', 'date_joined')
