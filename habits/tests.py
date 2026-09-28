@@ -184,3 +184,4 @@ class HabitAPITests(APITestCase):
         }
         response = self.client.post(reverse('habit-list'), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+

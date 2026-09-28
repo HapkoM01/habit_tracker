@@ -115,6 +115,7 @@ class Habit(models.Model):
         super().save(*args, **kwargs)
 
 
+
 class HabitLog(models.Model):
     """Отметка о выполнении привычки за день."""
     habit = models.ForeignKey(

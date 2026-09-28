@@ -61,6 +61,44 @@ coverage run --source='habits,users' manage.py test
 coverage report -m
 ```
 
+
+## Docker Compose
+
+Запуск всех сервисов одной командой:
+
+```bash
+cp .env.example .env
+# заполните SECRET_KEY и TELEGRAM_BOT_TOKEN
+
+docker compose up --build -d
+```
+
+Сервисы:
+
+| Сервис | Описание | Порты |
+|--------|----------|-------|
+| `web` | Django (gunicorn) | **8000** (expose + ports) |
+| `redis` | брокер Celery | только внутри сети (volume `redis_data`) |
+| `celery` | worker | — |
+| `celery-beat` | периодические задачи | — |
+
+Данные сохраняются в volumes: `redis_data`, `sqlite_data`.
+
+API: http://localhost:8000/api/docs/
+
+Остановка:
+
+```bash
+docker compose down
+```
+
+Логи:
+
+```bash
+docker compose logs -f web
+docker compose logs -f celery
+```
+
 ## 👨‍💻 Код написал:
 
 ### 𝑯𝒂𝒑𝒌𝒐𝑴 - 𝑩𝒆𝒈𝒊𝒏𝒏𝒆𝒓 𝑷𝒚𝒕𝒉𝒐𝒏-𝒅𝒆𝒗𝒆𝒍𝒐𝒑𝒆𝒓!
