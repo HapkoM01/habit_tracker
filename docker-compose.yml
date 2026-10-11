@@ -1,0 +1,77 @@
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    # без ports — Redis только во внутренней сети compose
+
+  web:
+    build: .
+    command: gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    volumes:
+      - .:/app
+      - sqlite_data:/app/data
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    expose:
+      - "8000"
+
+  celery:
+    build: .
+    command: celery -A config worker -l info
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    volumes:
+      - .:/app
+      - sqlite_data:/app/data
+    depends_on:
+      - redis
+      - web
+
+  celery-beat:
+    build: .
+    command: celery -A config beat -l info
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    volumes:
+      - .:/app
+      - sqlite_data:/app/data
+    depends_on:
+      - redis
+      - web
+
+  # Опционально: Telegram-бот
+  # telegram-bot:
+  #   build: .
+  #   command: python manage.py run_telegram_bot
+  #   restart: unless-stopped
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     CELERY_BROKER_URL: redis://redis:6379/0
+  #   volumes:
+  #     - .:/app
+  #     - sqlite_data:/app/data
+  #   depends_on:
+  #     - web
+
+volumes:
+  redis_data:
+  sqlite_data:

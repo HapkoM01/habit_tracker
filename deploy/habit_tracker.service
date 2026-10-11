@@ -1,0 +1,19 @@
+# /etc/systemd/system/habit_tracker.service
+[Unit]
+Description=Habit Tracker Gunicorn
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/habit_tracker
+EnvironmentFile=/home/ubuntu/habit_tracker/.env
+ExecStart=/home/ubuntu/habit_tracker/venv/bin/gunicorn \
+    --workers 3 \
+    --bind 127.0.0.1:8000 \
+    config.wsgi:application
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
